@@ -5,7 +5,7 @@ import classes from './BuildControls.module.css';
 import { ig } from '../Burger';
 
 export type DisableType = {
-  salad: boolean;
+  lettuce: boolean;
   bacon: boolean;
   cheese: boolean;
   meat: boolean;
@@ -21,7 +21,7 @@ type BuildControlsProps = {
 };
 
 const controls = [
-  { label: 'Salad', type: 'salad' },
+  { label: 'Lettuce', type: 'lettuce' },
   { label: 'Bacon', type: 'bacon' },
   { label: 'Cheese', type: 'cheese' },
   { label: 'Meat', type: 'meat' },

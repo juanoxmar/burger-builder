@@ -7,7 +7,7 @@ type BurgerProps = {
 };
 
 export type IngredientType = {
-  salad: number;
+  lettuce: number;
   bacon: number;
   cheese: number;
   meat: number;
