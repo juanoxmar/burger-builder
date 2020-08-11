@@ -17,6 +17,7 @@ type BuildControlsProps = {
   disabled: DisableType;
   price: number;
   purchaseable: boolean;
+  ordered: () => void;
 };
 
 const controls = [
@@ -32,6 +33,7 @@ const BuildControls: React.FC<BuildControlsProps> = ({
   disabled,
   price,
   purchaseable,
+  ordered,
 }) => {
   return (
     <div className={classes.BuildControls}>
@@ -47,7 +49,11 @@ const BuildControls: React.FC<BuildControlsProps> = ({
           disabled={disabled[control.type as ig]}
         />
       ))}
-      <button className={classes.OrderButton} disabled={!purchaseable}>
+      <button
+        className={classes.OrderButton}
+        disabled={!purchaseable}
+        onClick={ordered}
+      >
         ORDER NOW
       </button>
     </div>
