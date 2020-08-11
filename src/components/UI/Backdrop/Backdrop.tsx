@@ -3,7 +3,7 @@ import classes from './Backdrop.module.css';
 
 type BackdropProps = {
   show: boolean;
-  clicked: () => void;
+  clicked?: () => void;
 };
 
 const Backdrop: React.FC<BackdropProps> = ({ show, clicked }) =>
