@@ -3,19 +3,23 @@ import classes from './Modal.module.css';
 import Backdrop from '../Backdrop/Backdrop';
 
 type ModalProps = {
+  children?: React.ReactNode;
   show: boolean;
-  modalClosed: () => void;
+  modalClosed?: () => void;
 };
 
 class Modal extends React.Component<ModalProps> {
   // Renders only if Modal is visible
   shouldComponentUpdate(nextProps: ModalProps) {
-    return nextProps.show !== this.props.show;
+    return (
+      nextProps.show !== this.props.show ||
+      nextProps.children !== this.props.children
+    );
   }
 
-  componentDidUpdate() {
-    console.log('[Modal] DidUpdate');
-  }
+  // componentDidUpdate() {
+  //   console.log('[Modal] DidUpdate');
+  // }
 
   render() {
     return (

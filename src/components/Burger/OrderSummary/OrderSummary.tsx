@@ -11,9 +11,9 @@ type OrderSummaryProps = {
 
 // This could be a React.FC
 class OrderSummary extends React.Component<OrderSummaryProps> {
-  componentDidUpdate() {
-    console.log('[OrderSummary] DidUpdate');
-  }
+  // componentDidUpdate() {
+  //   console.log('[OrderSummary] DidUpdate');
+  // }
 
   render() {
     const ingredientSummary = Object.keys(this.props.ingredients).map((key) => (
