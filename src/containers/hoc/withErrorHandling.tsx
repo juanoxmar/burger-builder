@@ -1,11 +1,23 @@
 import React from 'react';
 import Modal from '../../components/UI/Modal/Modal';
+import { AxiosInstance } from 'axios';
 
-const withErrorHandler = (WrappedComponent, axios) => {
-  return class extends React.Component {
-    state = {
-      error: null,
-    };
+type errorHandlerState = {
+  error: any;
+};
+
+const withErrorHandler = (WrappedComponent: any, axios: AxiosInstance) => {
+  return class extends React.Component<{}, errorHandlerState> {
+    reqInter: any;
+    resInter: any;
+
+    constructor(props: any) {
+      super(props);
+
+      this.state = {
+        error: null,
+      };
+    }
 
     UNSAFE_componentWillMount() {
       this.reqInter = axios.interceptors.request.use((req) => {

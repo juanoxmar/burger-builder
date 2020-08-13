@@ -2,7 +2,7 @@ import React from 'react';
 import classes from './Burger.module.css';
 import BurgerIngredient from './BurgerIngredient/BurgerIngredient';
 
-type BurgerProps = {
+export type BurgerProps = {
   ingredients: IngredientType;
 };
 

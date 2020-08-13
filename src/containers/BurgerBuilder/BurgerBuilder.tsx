@@ -1,17 +1,18 @@
 import React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import Burger, { IngredientType, ig } from '../../components/Burger/Burger';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
-import instance from '../../axios-orders';
+import axios from '../../axios-orders';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../hoc/withErrorHandling';
 
 const INGREDIENT_PRICES = {
-  lettuce: 0.5,
-  bacon: 0.7,
-  cheese: 0.4,
-  meat: 1.3,
+  lettuce: 0.25,
+  bacon: 1.0,
+  cheese: 0.75,
+  meat: 1.5,
 };
 
 type BurgerBuildState = {
@@ -23,10 +24,13 @@ type BurgerBuildState = {
   error: boolean;
 };
 
-class BurgerBuilder extends React.Component<{}, BurgerBuildState> {
+class BurgerBuilder extends React.Component<
+  RouteComponentProps,
+  BurgerBuildState
+> {
   state = {
     ingredients: null,
-    totalPrice: 5.4,
+    totalPrice: 8.0,
     purchaseable: false,
     purchasing: false,
     loading: false,
@@ -80,36 +84,36 @@ class BurgerBuilder extends React.Component<{}, BurgerBuildState> {
     this.setState({ purchasing: !this.state.purchasing });
   };
 
-  purchaseContineHandler = async () => {
-    this.setState({ loading: true });
-    const order = {
-      ingredients: this.state.ingredients,
-      price: this.state.totalPrice,
-      customer: {
-        name: 'Juan',
-        address: {
-          street: 'Street 1',
-          city: 'Seattle',
-          zip: '12345',
-          country: 'USA',
-        },
-        email: 'juan@ramirez.com',
-      },
-      deliveryMethod: 'fastest',
-    };
-    try {
-      await instance.post('/orders.json', order);
-      this.setState({ loading: false, purchasing: false });
-    } catch (error) {
-      this.setState({ loading: false, purchasing: false });
-      console.error(error);
+  purchaseContineHandler = () => {
+    const queryParams = [];
+    for (let i in (this.state.ingredients as unknown) as IngredientType) {
+      queryParams.push(
+        `${encodeURIComponent(i)}=${encodeURIComponent(
+          this.state.ingredients![i]
+        )}`
+      );
     }
+
+    queryParams.push(`price=${this.state.totalPrice.toFixed(2)}`);
+
+    const queryString = queryParams.join('&');
+    this.props.history.push({
+      pathname: '/checkout',
+      search: '?' + queryString,
+    });
   };
 
   async componentDidMount() {
     try {
-      const response = await instance.get('/ingredients.json');
-      this.setState({ ingredients: response.data });
+      const response = await axios.get('/ingredients.json');
+      this.setState({
+        ingredients: {
+          lettuce: response.data.lettuce,
+          bacon: response.data.bacon,
+          cheese: response.data.cheese,
+          meat: response.data.meat,
+        },
+      });
     } catch (error) {
       this.setState({ error: true });
       console.error(error);
@@ -179,4 +183,4 @@ class BurgerBuilder extends React.Component<{}, BurgerBuildState> {
   }
 }
 
-export default withErrorHandler(BurgerBuilder, instance);
+export default withErrorHandler(BurgerBuilder, axios);
