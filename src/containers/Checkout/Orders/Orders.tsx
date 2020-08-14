@@ -1,30 +1,10 @@
 import React from 'react';
 import Order from '../../../components/Order/Order';
 import axios from '../../../axios-orders';
-import { IngredientType } from '../../../components/Burger/Burger';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../../containers/hoc/withErrorHandling';
 
-type OrdersState = {
-  orders: {
-    customer: {
-      address: {
-        city: string;
-        country: string;
-        street: string;
-        zip: string;
-      };
-      email: string;
-      name: string;
-    };
-    deliveryMethod: string;
-    ingredients: IngredientType;
-    price: number;
-  }[];
-  loading: boolean;
-};
-
-class Orders extends React.Component<{}, OrdersState> {
+class Orders extends React.Component {
   state = {
     orders: [
       {
