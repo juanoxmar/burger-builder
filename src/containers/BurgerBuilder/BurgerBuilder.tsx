@@ -98,7 +98,7 @@ class BurgerBuilder extends React.Component<
 
     const queryString = queryParams.join('&');
     this.props.history.push({
-      pathname: '/checkout',
+      pathname: '/burger-builder/checkout',
       search: '?' + queryString,
     });
   };

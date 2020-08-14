@@ -41,7 +41,7 @@ class Checkout extends React.Component<RouteComponentProps> {
   };
 
   continueHandler = () => {
-    this.props.history.replace('/checkout/contact-data');
+    this.props.history.replace('/burger-builder/checkout/contact-data');
   };
 
   render() {

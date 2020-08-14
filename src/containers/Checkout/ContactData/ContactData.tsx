@@ -20,7 +20,7 @@ class ContactData extends React.Component<ContactDataProps> {
   };
 
   orderHandler = () => {
-    this.props.history.push('/');
+    this.props.history.push('/burger-builder');
   };
 
   render() {
