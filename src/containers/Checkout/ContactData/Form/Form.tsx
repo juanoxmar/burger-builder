@@ -63,7 +63,9 @@ const schema = yup.object({
 function Form({ ingredients, price, order, load }: FormProps) {
   const style = useStyles();
 
-  const { register, handleSubmit, errors, control } = useForm<IFormInputs>({
+  const { register, handleSubmit, errors, control, formState } = useForm<
+    IFormInputs
+  >({
     resolver: yupResolver(schema),
     mode: 'all',
   });
@@ -160,10 +162,15 @@ function Form({ ingredients, price, order, load }: FormProps) {
               </TextField>
             }
             name='delivery'
-            defaultValue='fast'
+            defaultValue=''
             control={control}
           />
-          <Button color='primary' type='submit' size='large'>
+          <Button
+            color='primary'
+            type='submit'
+            size='large'
+            disabled={!formState.isValid}
+          >
             ORDER
           </Button>
         </ThemeProvider>
