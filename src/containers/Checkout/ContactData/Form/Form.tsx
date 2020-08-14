@@ -1,10 +1,39 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers';
 import * as yup from 'yup';
 import classes from './Form.module.css';
-import { IngredientType } from '../../../../components/Burger/Burger';
+import {
+  makeStyles,
+  Theme,
+  createStyles,
+  createMuiTheme,
+  ThemeProvider,
+  MenuItem,
+  Button,
+  TextField,
+} from '@material-ui/core';
+import { orange } from '@material-ui/core/colors';
 import axios from '../../../../axios-orders';
+import { IngredientType } from '../../../../components/Burger/Burger';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      display: 'flex',
+      flexWrap: 'wrap',
+    },
+    margin: {
+      margin: theme.spacing(1),
+    },
+  })
+);
+
+const theme = createMuiTheme({
+  palette: {
+    primary: orange,
+  },
+});
 
 type FormProps = {
   ingredients: IngredientType;
@@ -23,16 +52,18 @@ type IFormInputs = {
 };
 
 const schema = yup.object({
-  name: yup.string().required(),
-  email: yup.string().email().required(),
-  address: yup.string().required(),
-  city: yup.string().required(),
-  zip: yup.string().required().min(5),
-  delivery: yup.string().required(),
+  name: yup.string().required('Name Required'),
+  email: yup.string().email().required('Email Required'),
+  address: yup.string().required('Address Required'),
+  city: yup.string().required('City Required'),
+  zip: yup.string().required('Zip Code Required').min(5),
+  delivery: yup.string().required('Delivery Speed Required'),
 });
 
 function Form({ ingredients, price, order, load }: FormProps) {
-  const { register, handleSubmit, errors } = useForm<IFormInputs>({
+  const style = useStyles();
+
+  const { register, handleSubmit, errors, control } = useForm<IFormInputs>({
     resolver: yupResolver(schema),
     mode: 'all',
   });
@@ -61,58 +92,81 @@ function Form({ ingredients, price, order, load }: FormProps) {
   return (
     <React.Fragment>
       <form onSubmit={handleSubmit(onSubmit)} className={classes.Input}>
-        <input
-          className={classes.InputElement}
-          type='text'
-          placeholder='Name'
-          name='name'
-          ref={register}
-        />
-        <p>{errors.name?.message}</p>
-        <input
-          className={classes.InputElement}
-          type='text'
-          placeholder='Email'
-          name='email'
-          ref={register}
-        />
-        <p>{errors.email?.message}</p>
-
-        <input
-          className={classes.InputElement}
-          type='text'
-          placeholder='Address'
-          name='address'
-          ref={register}
-        />
-        <p>{errors.address?.message}</p>
-
-        <input
-          className={classes.InputElement}
-          type='text'
-          placeholder='City'
-          name='city'
-          ref={register}
-        />
-        <p>{errors.city?.message}</p>
-
-        <input
-          className={classes.InputElement}
-          type='text'
-          placeholder='Zip'
-          name='zip'
-          ref={register}
-        />
-        <p>{errors.zip?.message}</p>
-
-        <select name='delivery' ref={register} className={classes.InputElement}>
-          <option></option>
-          <option value='Fast'>Fast</option>
-          <option value='Slow'>Slow</option>
-        </select>
-        <p>{errors.delivery?.message}</p>
-
-        <input type='submit' />
+        <ThemeProvider theme={theme}>
+          <TextField
+            className={style.margin}
+            type='text'
+            label='Name'
+            name='name'
+            inputRef={register}
+            error={!!errors.name}
+            helperText={errors.name?.message}
+            variant='outlined'
+          />
+          <TextField
+            className={style.margin}
+            type='text'
+            label='Email'
+            name='email'
+            inputRef={register}
+            variant='outlined'
+            error={!!errors.email}
+            helperText={errors.email?.message}
+          />
+          <TextField
+            className={style.margin}
+            type='text'
+            label='Address'
+            name='address'
+            inputRef={register}
+            variant='outlined'
+            error={!!errors.address}
+            helperText={errors.address?.message}
+          />
+          <TextField
+            className={style.margin}
+            type='text'
+            label='City'
+            name='city'
+            inputRef={register}
+            variant='outlined'
+            error={!!errors.city}
+            helperText={errors.city?.message}
+          />
+          <TextField
+            className={style.margin}
+            label='Zip'
+            type='text'
+            name='zip'
+            inputRef={register}
+            variant='outlined'
+            error={!!errors.zip}
+            helperText={errors.zip?.message}
+          />
+          <Controller
+            as={
+              <TextField
+                label='Delivery'
+                className={style.margin}
+                select
+                variant='outlined'
+                error={!!errors.delivery}
+                helperText={errors.delivery?.message}
+                value=''
+              >
+                <MenuItem value=''></MenuItem>
+                <MenuItem value='fast'>Fast</MenuItem>
+                <MenuItem value='slow'>Slow</MenuItem>
+              </TextField>
+            }
+            name='delivery'
+            defaultValue='fast'
+            control={control}
+          />
+          <Button color='primary' type='submit' size='large'>
+            ORDER
+          </Button>
+        </ThemeProvider>
       </form>
     </React.Fragment>
   );
