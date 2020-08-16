@@ -1,14 +1,15 @@
 import React from 'react';
 import classes from './ContactData.module.css';
-import { IngredientType } from '../../../components/Burger/Burger';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import { RouteComponentProps } from 'react-router-dom';
 import Form from './Form/Form';
+import { connect, ConnectedProps } from 'react-redux';
+import { mapState } from '../../BurgerBuilder/BurgerBuilder';
 
-type ContactDataProps = {
-  ingredients: IngredientType;
-  totalPrice: number;
-} & RouteComponentProps;
+const connector = connect(mapState);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+type ContactDataProps = RouteComponentProps & PropsFromRedux;
 
 class ContactData extends React.Component<ContactDataProps> {
   state = {
@@ -26,8 +27,8 @@ class ContactData extends React.Component<ContactDataProps> {
   render() {
     let form = (
       <Form
-        ingredients={this.props.ingredients}
-        price={this.props.totalPrice}
+        ingredients={this.props.ing}
+        price={this.props.prc}
         load={this.orderLoad}
         order={this.orderHandler}
       />
@@ -44,4 +45,4 @@ class ContactData extends React.Component<ContactDataProps> {
   }
 }
 
-export default ContactData;
+export default connector(ContactData);
