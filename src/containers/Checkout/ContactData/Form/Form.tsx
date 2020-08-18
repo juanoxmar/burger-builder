@@ -16,13 +16,21 @@ import {
 import { orange } from '@material-ui/core/colors';
 import axios from '../../../../axios-orders';
 import withErrorHandler from '../../../hoc/withErrorHandling';
-import { purchaseStart } from '../../../../store/actions/index';
+import {
+  purchaseStart,
+  initIngredients,
+  purchaseReset,
+} from '../../../../store/actions/index';
 import { ConnectedProps, connect } from 'react-redux';
-import { orderDataType } from '../../../../store/reducers/order';
 import { IngredientType } from '../../../../components/Burger/Burger';
+import { orderType } from '../../Orders/Orders';
+import Spinner from '../../../../components/UI/Spinner/Spinner';
 
 const mapDispatch = {
-  orderBurger: (orderData: orderDataType) => purchaseStart(orderData),
+  orderBurger: (orderData: orderType, token: string) =>
+    purchaseStart(orderData, token),
+  ingReset: () => initIngredients(),
+  purReset: () => purchaseReset(),
 };
 
 type stateType = {
@@ -32,7 +40,9 @@ type stateType = {
   };
   order: {
     loading: boolean;
+    purchased: boolean;
   };
+  auth: { token: string; userId: string };
 };
 
 const mapState = (state: stateType) => ({
@@ -44,6 +54,9 @@ const mapState = (state: stateType) => ({
   },
   price: state.burger.price,
   loading: state.order.loading,
+  token: state.auth.token,
+  userId: state.auth.userId,
+  purchased: state.order.purchased,
 });
 
 const connector = connect(mapState, mapDispatch);
@@ -70,7 +83,6 @@ const theme = createMuiTheme({
 
 type FormProps = {
   order: () => void;
-  load: () => void;
 };
 
 type IFormInputs = {
@@ -95,11 +107,15 @@ type Props = PropsFromRedux & FormProps;
 
 function Form({
   order,
-  load,
   orderBurger,
+  ingReset,
+  purReset,
   ingredients,
   price,
   loading,
+  token,
+  purchased,
+  userId,
 }: Props) {
   const style = useStyles();
 
@@ -111,105 +127,122 @@ function Form({
   });
 
   const onSubmit = (data: IFormInputs) => {
-    orderBurger({
-      customer: {
-        name: data.name,
-        email: data.email,
-        address: data.address,
-        city: data.city,
-        zip: data.zip,
+    orderBurger(
+      {
+        customer: {
+          name: data.name,
+          email: data.email,
+          address: data.address,
+          city: data.city,
+          zip: data.zip,
+        },
+        ingredients: ingredients,
+        price: price,
+        delivery: data.delivery,
+        userId: userId,
       },
-      ingredients: ingredients,
-      price: price,
-      delivery: data.delivery,
-    });
-    order();
+      token
+    );
   };
+
+  const purchaseCheck = () => {
+    if (purchased) {
+      ingReset();
+      purReset();
+      order();
+    }
+  };
+
+  purchaseCheck();
 
   return (
     <React.Fragment>
-      <form onSubmit={handleSubmit(onSubmit)} className={classes.Input}>
-        <ThemeProvider theme={theme}>
-          <TextField
-            className={style.margin}
-            type='text'
-            label='Name'
-            name='name'
-            inputRef={register}
-            error={!!errors.name}
-            helperText={errors.name?.message}
-            variant='outlined'
-          />
-          <TextField
-            className={style.margin}
-            type='text'
-            label='Email'
-            name='email'
-            inputRef={register}
-            variant='outlined'
-            error={!!errors.email}
-            helperText={errors.email?.message}
-          />
-          <TextField
-            className={style.margin}
-            type='text'
-            label='Address'
-            name='address'
-            inputRef={register}
-            variant='outlined'
-            error={!!errors.address}
-            helperText={errors.address?.message}
-          />
-          <TextField
-            className={style.margin}
-            type='text'
-            label='City'
-            name='city'
-            inputRef={register}
-            variant='outlined'
-            error={!!errors.city}
-            helperText={errors.city?.message}
-          />
-          <TextField
-            className={style.margin}
-            label='Zip'
-            type='text'
-            name='zip'
-            inputRef={register}
-            variant='outlined'
-            error={!!errors.zip}
-            helperText={errors.zip?.message}
-          />
-          <Controller
-            as={
-              <TextField
-                label='Delivery'
-                className={style.margin}
-                select
-                variant='outlined'
-                error={!!errors.delivery}
-                helperText={errors.delivery?.message}
-                value=''
-              >
-                <MenuItem value=''></MenuItem>
-                <MenuItem value='fast'>Fast</MenuItem>
-                <MenuItem value='slow'>Slow</MenuItem>
-              </TextField>
-            }
-            name='delivery'
-            defaultValue=''
-            control={control}
-          />
-          <Button
-            color='primary'
-            type='submit'
-            size='large'
-            disabled={!formState.isValid}
-          >
-            ORDER
-          </Button>
-        </ThemeProvider>
-      </form>
+      {loading ? (
+        <Spinner />
+      ) : (
+        <form onSubmit={handleSubmit(onSubmit)} className={classes.Input}>
+          <ThemeProvider theme={theme}>
+            <TextField
+              className={style.margin}
+              type='text'
+              label='Name'
+              name='name'
+              inputRef={register}
+              error={!!errors.name}
+              helperText={errors.name?.message}
+              variant='outlined'
+            />
+            <TextField
+              className={style.margin}
+              type='text'
+              label='Email'
+              name='email'
+              inputRef={register}
+              variant='outlined'
+              error={!!errors.email}
+              helperText={errors.email?.message}
+            />
+            <TextField
+              className={style.margin}
+              type='text'
+              label='Address'
+              name='address'
+              inputRef={register}
+              variant='outlined'
+              error={!!errors.address}
+              helperText={errors.address?.message}
+            />
+            <TextField
+              className={style.margin}
+              type='text'
+              label='City'
+              name='city'
+              inputRef={register}
+              variant='outlined'
+              error={!!errors.city}
+              helperText={errors.city?.message}
+            />
+            <TextField
+              className={style.margin}
+              label='Zip'
+              type='text'
+              name='zip'
+              inputRef={register}
+              variant='outlined'
+              error={!!errors.zip}
+              helperText={errors.zip?.message}
+            />
+            <Controller
+              as={
+                <TextField
+                  label='Delivery'
+                  className={style.margin}
+                  select
+                  variant='outlined'
+                  error={!!errors.delivery}
+                  helperText={errors.delivery?.message}
+                  value=''
+                >
+                  <MenuItem value=''></MenuItem>
+                  <MenuItem value='fast'>Fast</MenuItem>
+                  <MenuItem value='slow'>Slow</MenuItem>
+                </TextField>
+              }
+              name='delivery'
+              defaultValue=''
+              control={control}
+            />
+            <Button
+              color='primary'
+              type='submit'
+              size='large'
+              disabled={!formState.isValid}
+            >
+              ORDER
+            </Button>
+          </ThemeProvider>
+        </form>
+      )}
     </React.Fragment>
   );
 }

@@ -18,14 +18,12 @@ class ContactData extends React.Component<ContactDataProps> {
     loading: false,
   };
 
-  orderLoad = () => {};
-
   orderHandler = () => {
     this.props.history.push('/burger-builder');
   };
 
   render() {
-    let form = <Form load={this.orderLoad} order={this.orderHandler} />;
+    let form = <Form order={this.orderHandler} />;
     if (this.state.loading) {
       form = <Spinner />;
     }

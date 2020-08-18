@@ -26,6 +26,7 @@ type stateType = {
     price: number;
     error: boolean;
   };
+  auth: { token: string };
 };
 
 export const mapState = (state: stateType) => ({
@@ -37,6 +38,7 @@ export const mapState = (state: stateType) => ({
   },
   prc: state.burger.price,
   err: state.burger.error,
+  isAuth: state.auth.token !== '',
 });
 
 const mapDispatch = {
@@ -64,7 +66,11 @@ class BurgerBuilder extends React.Component<BurgerBuilderProps, BurgerState> {
   };
 
   purchaseHandler = () => {
-    this.setState({ purchasing: !this.state.purchasing });
+    if (this.props.isAuth) {
+      this.setState({ purchasing: !this.state.purchasing });
+    } else {
+      this.props.history.push('/burger-builder/auth');
+    }
   };
 
   purchaseContineHandler = () => {
@@ -74,7 +80,9 @@ class BurgerBuilder extends React.Component<BurgerBuilderProps, BurgerState> {
   };
 
   componentDidMount() {
-    this.props.initHandler();
+    if (this.props.prc <= 8) {
+      this.props.initHandler();
+    }
 
     if (this.props.prc > 8 && !this.state.purchaseable) {
       this.setState({
@@ -140,6 +148,7 @@ class BurgerBuilder extends React.Component<BurgerBuilderProps, BurgerState> {
             price={this.props.prc}
             purchaseable={this.state.purchaseable}
             ordered={this.purchaseHandler}
+            isAuth={this.props.isAuth}
           />
         </React.Fragment>
       );

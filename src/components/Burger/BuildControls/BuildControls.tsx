@@ -17,6 +17,7 @@ type BuildControlsProps = {
   price: number;
   purchaseable: boolean;
   ordered: () => void;
+  isAuth: boolean;
 };
 
 const controls = [
@@ -33,6 +34,7 @@ const BuildControls: React.FC<BuildControlsProps> = ({
   price,
   purchaseable,
   ordered,
+  isAuth,
 }) => {
   return (
     <div className={classes.BuildControls}>
@@ -53,7 +55,7 @@ const BuildControls: React.FC<BuildControlsProps> = ({
         disabled={!purchaseable}
         onClick={ordered}
       >
-        ORDER NOW
+        {isAuth ? 'ORDER NOW' : 'SIGN UP TO ORDER'}
       </button>
     </div>
   );

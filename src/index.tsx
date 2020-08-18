@@ -8,10 +8,13 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import burgerBuildReducer from './store/reducers/burgerBuilder';
 import orderReducer from './store/reducers/order';
 import thunk from 'redux-thunk';
+import authReducer from './store/reducers/auth';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 const rootReducer = combineReducers({
   burger: burgerBuildReducer,
   order: orderReducer,
+  auth: authReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -23,7 +26,9 @@ const store = createStore(
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <Router>
+      <App />
+    </Router>
   </Provider>,
   document.getElementById('root')
 );

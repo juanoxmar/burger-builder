@@ -7,9 +7,10 @@ import Backdrop from '../../UI/Backdrop/Backdrop';
 type SideDrawerProps = {
   open: boolean;
   closed: () => void;
+  isAuth: boolean;
 };
 
-const SideDrawer: React.FC<SideDrawerProps> = ({ open, closed }) => {
+const SideDrawer: React.FC<SideDrawerProps> = ({ open, closed, isAuth }) => {
   let attachedClasses = [classes.SideDrawer, classes.Close];
   if (open) {
     attachedClasses = [classes.SideDrawer, classes.Open];
@@ -22,7 +23,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({ open, closed }) => {
           <Logo />
         </div>
         <nav>
-          <NavigationItems />
+          <NavigationItems isAuthenticated={isAuth} />
         </nav>
       </div>
     </React.Fragment>

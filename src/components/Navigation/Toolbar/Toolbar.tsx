@@ -6,9 +6,10 @@ import DrawerToggle from '../SideDrawer/DrawerToggle/DrawerToggle';
 
 type ToolbarProps = {
   open: () => void;
+  isAuth: boolean;
 };
 
-const Toolbar: React.FC<ToolbarProps> = ({ open }) => {
+const Toolbar: React.FC<ToolbarProps> = ({ open, isAuth }) => {
   return (
     <header className={classes.Toolbar}>
       <DrawerToggle click={open} />
@@ -16,7 +17,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ open }) => {
         <Logo />
       </div>
       <nav className={classes.DesktopOnly}>
-        <NavigationItems />
+        <NavigationItems isAuthenticated={isAuth} />
       </nav>
     </header>
   );

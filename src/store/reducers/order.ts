@@ -2,24 +2,16 @@ import {
   PURCHASE_FAIL,
   PURCHASE_SUCCESS,
   PURCHASE_START,
+  PURCHASE_RESET,
+  FETCH_ORDERS_FAIL,
+  FETCH_ORDERS_START,
+  FETCH_ORDERS_SUCCESS,
 } from '../actions/actionTypes';
-import { IngredientType } from '../../components/Burger/Burger';
-
-export type orderDataType = {
-  customer: {
-    name: string;
-    email: string;
-    address: string;
-    city: string;
-    zip: string;
-  };
-  ingredients: IngredientType;
-  price: number;
-  delivery: string;
-};
+import { orderType } from '../../containers/Checkout/Orders/Orders';
+import updateObject from '../utility';
 
 type initialStateType = {
-  orders: orderDataType[];
+  orders: orderType[];
   loading: boolean;
   purchased: boolean;
 };
@@ -28,6 +20,10 @@ const initialState: initialStateType = {
   orders: [],
   loading: false,
   purchased: false,
+};
+
+type PurchaseResetAction = {
+  type: typeof PURCHASE_RESET;
 };
 
 type PurchaseStartAction = {
@@ -42,13 +38,31 @@ type PurchaseFailAction = {
 type PurchaseSuccessAction = {
   type: typeof PURCHASE_SUCCESS;
   orderId: number;
-  orderData: orderDataType;
+  orderData: orderType;
+};
+
+type FetchOrderSuccess = {
+  type: typeof FETCH_ORDERS_SUCCESS;
+  orders: orderType[];
+};
+
+type FetchOrderFail = {
+  type: typeof FETCH_ORDERS_FAIL;
+  error: Error;
+};
+
+type FetchOrderStart = {
+  type: typeof FETCH_ORDERS_START;
 };
 
 type actionType =
   | PurchaseFailAction
   | PurchaseSuccessAction
-  | PurchaseStartAction;
+  | PurchaseStartAction
+  | FetchOrderFail
+  | FetchOrderStart
+  | FetchOrderSuccess
+  | PurchaseResetAction;
 
 const reducer = (state = initialState, action: actionType) => {
   switch (action.type) {
@@ -68,8 +82,17 @@ const reducer = (state = initialState, action: actionType) => {
         ...state,
         orders: state.orders.concat(newOrder),
         loading: false,
+        purchased: true,
       };
     }
+    case PURCHASE_RESET:
+      return updateObject(state, { purchased: false });
+    case FETCH_ORDERS_START:
+      return updateObject(state, { loading: true });
+    case FETCH_ORDERS_SUCCESS:
+      return updateObject(state, { orders: action.orders, loading: false });
+    case FETCH_ORDERS_FAIL:
+      return updateObject(state, { loading: false });
     default:
       return state;
   }
