@@ -15,7 +15,40 @@ import {
 } from '@material-ui/core';
 import { orange } from '@material-ui/core/colors';
 import axios from '../../../../axios-orders';
+import withErrorHandler from '../../../hoc/withErrorHandling';
+import { purchaseStart } from '../../../../store/actions/index';
+import { ConnectedProps, connect } from 'react-redux';
+import { orderDataType } from '../../../../store/reducers/order';
 import { IngredientType } from '../../../../components/Burger/Burger';
+
+const mapDispatch = {
+  orderBurger: (orderData: orderDataType) => purchaseStart(orderData),
+};
+
+type stateType = {
+  burger: {
+    ingredients: IngredientType;
+    price: number;
+  };
+  order: {
+    loading: boolean;
+  };
+};
+
+const mapState = (state: stateType) => ({
+  ingredients: {
+    lettuce: state.burger.ingredients.lettuce,
+    bacon: state.burger.ingredients.bacon,
+    cheese: state.burger.ingredients.cheese,
+    meat: state.burger.ingredients.meat,
+  },
+  price: state.burger.price,
+  loading: state.order.loading,
+});
+
+const connector = connect(mapState, mapDispatch);
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,8 +69,6 @@ const theme = createMuiTheme({
 });
 
 type FormProps = {
-  ingredients: IngredientType;
-  price: number;
   order: () => void;
   load: () => void;
 };
@@ -60,7 +91,16 @@ const schema = yup.object({
   delivery: yup.string().required('Delivery Speed Required'),
 });
 
-function Form({ ingredients, price, order, load }: FormProps) {
+type Props = PropsFromRedux & FormProps;
+
+function Form({
+  order,
+  load,
+  orderBurger,
+  ingredients,
+  price,
+  loading,
+}: Props) {
   const style = useStyles();
 
   const { register, handleSubmit, errors, control, formState } = useForm<
@@ -70,25 +110,20 @@ function Form({ ingredients, price, order, load }: FormProps) {
     mode: 'all',
   });
 
-  const onSubmit = async (data: IFormInputs) => {
-    try {
-      load();
-      await axios.post('/orders.json', {
-        customer: {
-          name: data.name,
-          email: data.email,
-          address: data.address,
-          city: data.city,
-          zip: data.zip,
-        },
-        ingredients: ingredients,
-        price: price,
-        delivery: data.delivery,
-      });
-      order();
-    } catch (error) {
-      console.error(error);
-    }
+  const onSubmit = (data: IFormInputs) => {
+    orderBurger({
+      customer: {
+        name: data.name,
+        email: data.email,
+        address: data.address,
+        city: data.city,
+        zip: data.zip,
+      },
+      ingredients: ingredients,
+      price: price,
+      delivery: data.delivery,
+    });
+    order();
   };
 
   return (
@@ -179,4 +214,4 @@ function Form({ ingredients, price, order, load }: FormProps) {
   );
 }
 
-export default Form;
+export default connector(withErrorHandler(Form, axios));

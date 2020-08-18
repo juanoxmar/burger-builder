@@ -3,11 +3,14 @@ import Modal from '../../components/UI/Modal/Modal';
 import { AxiosInstance } from 'axios';
 
 type errorHandlerState = {
-  error: any;
+  error: Error | null;
 };
 
-const withErrorHandler = (WrappedComponent: any, axios: AxiosInstance) => {
-  return class extends React.Component<{}, errorHandlerState> {
+const withErrorHandler = <P extends object>(
+  WrappedComponent: React.ComponentType<P>,
+  axios: AxiosInstance
+) =>
+  class extends React.Component<P, errorHandlerState> {
     reqInter: any;
     resInter: any;
 
@@ -45,7 +48,7 @@ const withErrorHandler = (WrappedComponent: any, axios: AxiosInstance) => {
       return (
         <React.Fragment>
           <Modal
-            show={this.state.error}
+            show={!!this.state.error}
             modalClosed={this.errorConfirmedHandler}
           >
             {this.state.error ? this.state.error.message : null}
@@ -55,6 +58,5 @@ const withErrorHandler = (WrappedComponent: any, axios: AxiosInstance) => {
       );
     }
   };
-};
 
 export default withErrorHandler;

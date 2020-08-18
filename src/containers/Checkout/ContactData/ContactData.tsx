@@ -5,6 +5,8 @@ import { RouteComponentProps } from 'react-router-dom';
 import Form from './Form/Form';
 import { connect, ConnectedProps } from 'react-redux';
 import { mapState } from '../../BurgerBuilder/BurgerBuilder';
+import withErrorHandler from '../../hoc/withErrorHandling';
+import axios from '../../../axios-orders';
 
 const connector = connect(mapState);
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -16,23 +18,14 @@ class ContactData extends React.Component<ContactDataProps> {
     loading: false,
   };
 
-  orderLoad = () => {
-    this.setState({ loading: true });
-  };
+  orderLoad = () => {};
 
   orderHandler = () => {
     this.props.history.push('/burger-builder');
   };
 
   render() {
-    let form = (
-      <Form
-        ingredients={this.props.ing}
-        price={this.props.prc}
-        load={this.orderLoad}
-        order={this.orderHandler}
-      />
-    );
+    let form = <Form load={this.orderLoad} order={this.orderHandler} />;
     if (this.state.loading) {
       form = <Spinner />;
     }
@@ -45,4 +38,4 @@ class ContactData extends React.Component<ContactDataProps> {
   }
 }
 
-export default connector(ContactData);
+export default connector(withErrorHandler(ContactData, axios));
