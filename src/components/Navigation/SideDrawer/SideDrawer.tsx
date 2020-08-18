@@ -22,7 +22,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({ open, closed, isAuth }) => {
         <div className={classes.Logo}>
           <Logo />
         </div>
-        <nav>
+        <nav onClick={closed}>
           <NavigationItems isAuthenticated={isAuth} />
         </nav>
       </div>

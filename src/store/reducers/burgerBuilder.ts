@@ -90,6 +90,7 @@ const reducer = (state = initialState, action: actionType) => {
       return {
         ...state,
         ingredients: action.ingredients,
+        price: 8,
         error: false,
       };
     }

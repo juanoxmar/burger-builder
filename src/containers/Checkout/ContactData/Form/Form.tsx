@@ -16,11 +16,7 @@ import {
 import { orange } from '@material-ui/core/colors';
 import axios from '../../../../axios-orders';
 import withErrorHandler from '../../../hoc/withErrorHandling';
-import {
-  purchaseStart,
-  initIngredients,
-  purchaseReset,
-} from '../../../../store/actions/index';
+import { purchaseStart } from '../../../../store/actions/index';
 import { ConnectedProps, connect } from 'react-redux';
 import { IngredientType } from '../../../../components/Burger/Burger';
 import { orderType } from '../../Orders/Orders';
@@ -29,8 +25,6 @@ import Spinner from '../../../../components/UI/Spinner/Spinner';
 const mapDispatch = {
   orderBurger: (orderData: orderType, token: string) =>
     purchaseStart(orderData, token),
-  ingReset: () => initIngredients(),
-  purReset: () => purchaseReset(),
 };
 
 type stateType = {
@@ -81,10 +75,6 @@ const theme = createMuiTheme({
   },
 });
 
-type FormProps = {
-  order: () => void;
-};
-
 type IFormInputs = {
   name: string;
   email: string;
@@ -103,18 +93,14 @@ const schema = yup.object({
   delivery: yup.string().required('Delivery Speed Required'),
 });
 
-type Props = PropsFromRedux & FormProps;
+type Props = PropsFromRedux;
 
 function Form({
-  order,
   orderBurger,
-  ingReset,
-  purReset,
   ingredients,
   price,
   loading,
   token,
-  purchased,
   userId,
 }: Props) {
   const style = useStyles();
@@ -144,16 +130,6 @@ function Form({
       token
     );
   };
-
-  const purchaseCheck = () => {
-    if (purchased) {
-      ingReset();
-      purReset();
-      order();
-    }
-  };
-
-  purchaseCheck();
 
   return (
     <React.Fragment>

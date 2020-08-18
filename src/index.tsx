@@ -10,6 +10,7 @@ import orderReducer from './store/reducers/order';
 import thunk from 'redux-thunk';
 import authReducer from './store/reducers/auth';
 import { BrowserRouter as Router } from 'react-router-dom';
+import Spinner from './components/UI/Spinner/Spinner';
 
 const rootReducer = combineReducers({
   burger: burgerBuildReducer,
@@ -26,9 +27,11 @@ const store = createStore(
 
 ReactDOM.render(
   <Provider store={store}>
-    <Router>
-      <App />
-    </Router>
+    <React.Suspense fallback={<Spinner />}>
+      <Router>
+        <App />
+      </Router>
+    </React.Suspense>
   </Provider>,
   document.getElementById('root')
 );

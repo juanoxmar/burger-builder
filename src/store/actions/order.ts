@@ -12,6 +12,7 @@ import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import axios from '../../axios-orders';
 import { orderType } from '../../containers/Checkout/Orders/Orders';
+import { initIngredients } from './burgerBuilder';
 
 const purchaseSuccess = (id: any, orderData: orderType) => ({
   type: PURCHASE_SUCCESS,
@@ -42,6 +43,8 @@ export const purchaseStart = (
     dispatch(purchase());
     const response = await axios.post(`/orders.json?auth=${token}`, orderData);
     dispatch(purchaseSuccess(response.data.name, orderData));
+    dispatch(initIngredients());
+    dispatch(purchaseReset());
   } catch (error) {
     dispatch(purchaseFail(error));
     console.error(error);
