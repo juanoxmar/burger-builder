@@ -51,7 +51,10 @@ const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type BurgerBuilderProps = PropsFromRedux & RouteComponentProps;
 
-class BurgerBuilder extends React.Component<BurgerBuilderProps, BurgerState> {
+export class BurgerBuilder extends React.Component<
+  BurgerBuilderProps,
+  BurgerState
+> {
   state = {
     purchaseable: false,
     purchasing: false,
