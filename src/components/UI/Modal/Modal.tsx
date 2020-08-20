@@ -8,35 +8,27 @@ type ModalProps = {
   modalClosed?: () => void;
 };
 
-class Modal extends React.Component<ModalProps> {
-  // Renders only if Modal is visible
-  shouldComponentUpdate(nextProps: ModalProps) {
-    return (
-      nextProps.show !== this.props.show ||
-      nextProps.children !== this.props.children
-    );
-  }
+function Modal(props: ModalProps) {
+  const { show, children, modalClosed } = props;
 
-  // componentDidUpdate() {
-  //   console.log('[Modal] DidUpdate');
-  // }
-
-  render() {
-    return (
-      <React.Fragment>
-        <Backdrop show={this.props.show} clicked={this.props.modalClosed} />
-        <div
-          className={classes.Modal}
-          style={{
-            transform: this.props.show ? 'translateY(0)' : 'translateY(-100vh)',
-            opacity: this.props.show ? '1' : '0',
-          }}
-        >
-          {this.props.children}
-        </div>
-      </React.Fragment>
-    );
-  }
+  return (
+    <React.Fragment>
+      <Backdrop show={show} clicked={modalClosed} />
+      <div
+        className={classes.Modal}
+        style={{
+          transform: show ? 'translateY(0)' : 'translateY(-100vh)',
+          opacity: show ? '1' : '0',
+        }}
+      >
+        {children}
+      </div>
+    </React.Fragment>
+  );
 }
 
-export default Modal;
+export default React.memo(
+  Modal,
+  (props, nextProps) =>
+    nextProps.show === props.show && nextProps.children === props.children
+);

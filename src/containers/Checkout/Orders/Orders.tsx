@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Order from '../../../components/Order/Order';
 import axios from '../../../axios-orders';
 import Spinner from '../../../components/UI/Spinner/Spinner';
@@ -41,28 +41,28 @@ const mapDispatch = {
 const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-class Orders extends React.Component<PropsFromRedux, stateType> {
-  componentDidMount() {
-    this.props.onFetchOrders(this.props.token);
-  }
+function Orders(props: PropsFromRedux) {
+  const { token, orders, loading, onFetchOrders } = props;
 
-  render() {
-    const orders: orderType[] | [] = this.props.orders;
-    let orderRender;
-    if (orders.length >= 1) {
-      orderRender = orders.map((order, index) => (
-        <Order
-          key={index}
-          ingredients={order.ingredients}
-          totalPrice={order.price}
-        />
-      ));
-    }
-    if (this.props.loading) {
-      orderRender = <Spinner />;
-    }
-    return <div>{orderRender}</div>;
+  useEffect(() => {
+    onFetchOrders(token);
+  }, [onFetchOrders, token]);
+
+  const ordersArr: orderType[] | [] = orders;
+  let orderRender;
+  if (ordersArr.length >= 1) {
+    orderRender = ordersArr.map((order, index) => (
+      <Order
+        key={index}
+        ingredients={order.ingredients}
+        totalPrice={order.price}
+      />
+    ));
   }
+  if (loading) {
+    orderRender = <Spinner />;
+  }
+  return <div>{orderRender}</div>;
 }
 
 export default connector(withErrorHandler(Orders, axios));

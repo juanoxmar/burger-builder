@@ -24,19 +24,21 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type ContactDataProps = RouteComponentProps & PropsFromRedux;
 
-class ContactData extends React.Component<ContactDataProps> {
-  render() {
-    let form = <Form />;
-    if (this.props.loading) {
-      form = <Spinner />;
-    }
-    return (
-      <div className={classes.ContactData}>
-        <h4>Enter Your Contact Data</h4>
-        {form}
-      </div>
-    );
+function ContactData(props: ContactDataProps) {
+  const { loading } = props;
+
+  let form = <Form />;
+
+  if (loading) {
+    form = <Spinner />;
   }
+
+  return (
+    <div className={classes.ContactData}>
+      <h4>Enter Your Contact Data</h4>
+      {form}
+    </div>
+  );
 }
 
 export default connector(withErrorHandler(ContactData, axios));
